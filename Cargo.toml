@@ -2,6 +2,7 @@
 
 members = [
     "pong",
+    "breakout",
 ]
 
 [profile.dev.package."*"]
