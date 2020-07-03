@@ -8,6 +8,7 @@ use cgmath::Point2;
 
 use super::super::GlobalState;
 use super::super::Fonts;
+use super::super::Sounds;
 use super::super::SoundKind;
 use super::StartState;
 use super::State;
@@ -49,7 +50,7 @@ impl State for StartState {
 
     fn update(
         &mut self,
-        global_state: &mut GlobalState,
+        sounds: &mut Sounds,
         ctx: &mut Context,
     ) -> GameResult<Option<StateKind>> {
         if keyboard::is_key_pressed(ctx, KeyCode::Up)
@@ -57,12 +58,12 @@ impl State for StartState {
         {
             self.highlighted = if self.highlighted == 1 { 2 } else { 1 };
             let key = &SoundKind::PaddleHit.to_string();
-            global_state.sounds.get_mut(key).unwrap().play()?
+            sounds.get_mut(key).unwrap().play()?
         }
 
         let next = if keyboard::is_key_pressed(ctx, KeyCode::Return) {
             let key = &SoundKind::Confirm.to_string();
-            global_state.sounds.get_mut(key).unwrap().play()?;
+            sounds.get_mut(key).unwrap().play()?;
             if self.highlighted == 1 {
                 Some(StateKind::PaddleSelect(self.high_scores))
             } else {

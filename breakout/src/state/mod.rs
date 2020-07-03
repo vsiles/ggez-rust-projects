@@ -1,4 +1,5 @@
 use super::GlobalState;
+use super::Sounds;
 use ggez::{Context, GameResult};
 use std::collections::HashMap;
 
@@ -28,7 +29,7 @@ pub trait State {
     fn exit(&self);
     fn update(
         &mut self,
-        global_state: &mut GlobalState,
+        sounds: &mut Sounds,
         ctx: &mut Context,
     ) -> GameResult<Option<StateKind>>;
     fn render(&self, global_state: &GlobalState, ctx: &mut Context) -> GameResult<()>;
@@ -80,13 +81,13 @@ impl StateMachine {
     }
     pub fn update(
         &mut self,
-        global_state: &mut GlobalState,
+        sounds: &mut Sounds,
         ctx: &mut Context,
     ) -> GameResult {
         match &mut self.current {
             Some(key) => {
                 let current_state = self.states.get_mut(key).unwrap();
-                let next_state = current_state.update(global_state, ctx);
+                let next_state = current_state.update(sounds, ctx);
                 match next_state {
                     Ok(Some(new_state)) => {
                         self.change(new_state);

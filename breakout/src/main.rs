@@ -160,8 +160,7 @@ impl GlobalState {
 
 impl ggez::event::EventHandler for GlobalState {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
-        self.state_machine.update(self, ctx);
-        Ok(())
+        self.state_machine.update(&mut self.sounds, ctx)
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
