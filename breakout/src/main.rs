@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use std::path;
 
 use ggez::audio;
+use ggez::timer;
 use ggez::Context;
 use ggez::GameResult;
-use ggez::timer;
 
 use cgmath::Point2;
 
@@ -60,10 +60,16 @@ pub struct Fonts {
     large: f32,
 }
 
+pub struct HighScore {
+    name: String,
+    score: u32,
+}
+
 pub struct GlobalState {
     sounds: Sounds,
     fonts: Fonts,
     state_machine: state::StateMachine,
+    high_scores: Vec<HighScore>,
 }
 
 impl GlobalState {
@@ -136,15 +142,22 @@ impl GlobalState {
 
         let mut states = state::StateMachine::new();
         let start_state = state::StartState::new(&fonts);
+        let high_score_state = state::HighScoreState::new(&fonts);
         states
             .states
             .insert("start".to_string(), Box::new(start_state));
-        states.change(state::StateKind::Start(42));
+        states
+            .states
+            .insert("highscores".to_string(), Box::new(high_score_state));
+
+        // switch to start screen
+        states.change(state::StateKind::Start);
 
         let state = GlobalState {
             fonts,
             sounds,
             state_machine: states,
+            high_scores: vec![],
         };
         Ok(state)
     }

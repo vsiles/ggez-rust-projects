@@ -6,20 +6,20 @@ use std::collections::HashMap;
 pub enum StateKind {
     // EnterHighScores,
     // GameOver,
-    HighScores(u32),
-    PaddleSelect(u32),
+    HighScores,
+    PaddleSelect,
     // Play,
     // Serve,
-    Start(u32),
+    Start,
     // Victory,
 }
 
 impl StateKind {
     fn to_string(&self) -> String {
         match self {
-            StateKind::HighScores(_) => "highscores".to_string(),
-            StateKind::PaddleSelect(_) => "paddleselect".to_string(),
-            StateKind::Start(_) => "start".to_string(),
+            StateKind::HighScores => "highscores".to_string(),
+            StateKind::PaddleSelect => "paddleselect".to_string(),
+            StateKind::Start => "start".to_string(),
         }
     }
 }
@@ -27,20 +27,20 @@ impl StateKind {
 pub trait State {
     fn enter(&mut self, params: StateKind);
     fn exit(&self);
-    fn update(
-        &mut self,
-        sounds: &mut Sounds,
-        ctx: &mut Context,
-    ) -> GameResult<Option<StateKind>>;
+    fn update(&mut self, sounds: &mut Sounds, ctx: &mut Context) -> GameResult<Option<StateKind>>;
     fn render(&self, global_state: &GlobalState, ctx: &mut Context) -> GameResult<()>;
 }
 
 pub struct StartState {
     highlighted: u32,
-    high_scores: u32,
     title: ggez::graphics::Text,
     start: ggez::graphics::Text,
     high_score: ggez::graphics::Text,
+}
+
+pub struct HighScoreState {
+    text: ggez::graphics::Text,
+    exit: ggez::graphics::Text,
 }
 
 pub struct StateMachine {
@@ -75,15 +75,11 @@ impl StateMachine {
             Some(key) => {
                 let current_state = &self.states[key];
                 current_state.render(global_state, ctx)
-            },
-            None => Ok(())
+            }
+            None => Ok(()),
         }
     }
-    pub fn update(
-        &mut self,
-        sounds: &mut Sounds,
-        ctx: &mut Context,
-    ) -> GameResult {
+    pub fn update(&mut self, sounds: &mut Sounds, ctx: &mut Context) -> GameResult {
         match &mut self.current {
             Some(key) => {
                 let current_state = self.states.get_mut(key).unwrap();
@@ -92,12 +88,12 @@ impl StateMachine {
                     Ok(Some(new_state)) => {
                         self.change(new_state);
                         Ok(())
-                    },
+                    }
                     Ok(None) => Ok(()),
-                    Err(_) => panic!("")
+                    Err(_) => panic!(""),
                 }
-            },
-            None => Ok(())
+            }
+            None => Ok(()),
         }
     }
 }
@@ -110,4 +106,5 @@ impl StateMachine {
 //     self.current:render()
 // end
 
+mod high_score_state;
 mod start_state;
