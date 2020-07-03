@@ -1,10 +1,12 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::path;
 
 use ggez::audio;
 use ggez::timer;
 use ggez::Context;
 use ggez::GameResult;
+use ggez::event::{KeyCode, KeyMods};
 
 use cgmath::Point2;
 
@@ -52,6 +54,7 @@ impl SoundKind {
 }
 
 type Sounds = HashMap<String, audio::Source>;
+type Keys = HashSet<KeyCode>;
 
 pub struct Fonts {
     font: ggez::graphics::Font,
@@ -70,6 +73,7 @@ pub struct GlobalState {
     fonts: Fonts,
     state_machine: state::StateMachine,
     high_scores: Vec<HighScore>,
+    keys_pressed: Keys,
 }
 
 impl GlobalState {
@@ -158,6 +162,7 @@ impl GlobalState {
             sounds,
             state_machine: states,
             high_scores: vec![],
+            keys_pressed : HashSet::new()
         };
         Ok(state)
     }
@@ -173,7 +178,9 @@ impl GlobalState {
 
 impl ggez::event::EventHandler for GlobalState {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
-        self.state_machine.update(&mut self.sounds, ctx)
+        self.state_machine.update(&mut self.sounds, &self.keys_pressed, ctx)?;
+        self.keys_pressed = HashSet::new();
+        Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
@@ -184,6 +191,11 @@ impl ggez::event::EventHandler for GlobalState {
         self.display_fps(ctx)?;
         ggez::graphics::present(ctx)
     }
+
+    fn key_down_event(&mut self, _ctx: &mut Context, key: KeyCode, _mods: KeyMods, _repeat: bool) {
+        let _ = self.keys_pressed.insert(key);
+    }
+
 }
 
 fn main() {
