@@ -8,9 +8,9 @@ use cgmath::Point2;
 
 use super::super::Fonts;
 use super::super::GlobalState;
+use super::super::Keys;
 use super::super::SoundKind;
 use super::super::Sounds;
-use super::super::Keys;
 use super::StartState;
 use super::State;
 use super::StateKind;
@@ -43,15 +43,18 @@ impl State for StartState {
 
     fn exit(&self) {}
 
-    fn update(&mut self, sounds: &mut Sounds, keys: &Keys, ctx: &mut Context) -> GameResult<Option<StateKind>> {
-        // if keyboard::is_key_pressed(ctx, KeyCode::Up) {
+    fn update(
+        &mut self,
+        sounds: &mut Sounds,
+        keys: &Keys,
+        ctx: &mut Context,
+    ) -> GameResult<Option<StateKind>> {
         if keys.contains(&KeyCode::Up) || keys.contains(&KeyCode::Down) {
             self.highlighted = if self.highlighted == 1 { 2 } else { 1 };
             let key = &SoundKind::PaddleHit.to_string();
             sounds.get_mut(key).unwrap().play()?
         }
 
-        // let next = if keyboard::is_key_pressed(ctx, KeyCode::Return) {
         let next = if keys.contains(&KeyCode::Return) {
             let key = &SoundKind::Confirm.to_string();
             sounds.get_mut(key).unwrap().play()?;
@@ -64,7 +67,6 @@ impl State for StartState {
             None
         };
 
-        // if keyboard::is_key_pressed(ctx, KeyCode::Escape) {
         if keys.contains(&KeyCode::Escape) {
             ggez::event::quit(ctx)
         }

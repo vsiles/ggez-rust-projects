@@ -8,9 +8,9 @@ use cgmath::Point2;
 
 use super::super::Fonts;
 use super::super::GlobalState;
+use super::super::Keys;
 use super::super::SoundKind;
 use super::super::Sounds;
-use super::super::Keys;
 use super::HighScoreState;
 use super::State;
 use super::StateKind;
@@ -38,8 +38,12 @@ impl State for HighScoreState {
 
     fn exit(&self) {}
 
-    fn update(&mut self, sounds: &mut Sounds, keys: &Keys, _ctx: &mut Context) -> GameResult<Option<StateKind>> {
-        // if keyboard::is_key_pressed(ctx, KeyCode::Escape) {
+    fn update(
+        &mut self,
+        sounds: &mut Sounds,
+        keys: &Keys,
+        _ctx: &mut Context,
+    ) -> GameResult<Option<StateKind>> {
         if keys.contains(&KeyCode::Escape) {
             let key = &SoundKind::WallHit.to_string();
             sounds.get_mut(key).unwrap().play()?;

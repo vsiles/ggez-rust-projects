@@ -1,6 +1,6 @@
 use super::GlobalState;
-use super::Sounds;
 use super::Keys;
+use super::Sounds;
 use ggez::{Context, GameResult};
 use std::collections::HashMap;
 
@@ -28,7 +28,12 @@ impl StateKind {
 pub trait State {
     fn enter(&mut self, params: StateKind);
     fn exit(&self);
-    fn update(&mut self, sounds: &mut Sounds, keys: &Keys, ctx: &mut Context) -> GameResult<Option<StateKind>>;
+    fn update(
+        &mut self,
+        sounds: &mut Sounds,
+        keys: &Keys,
+        ctx: &mut Context,
+    ) -> GameResult<Option<StateKind>>;
     fn render(&self, global_state: &GlobalState, ctx: &mut Context) -> GameResult<()>;
 }
 
@@ -98,14 +103,6 @@ impl StateMachine {
         }
     }
 }
-
-// function StateMachine:update(dt)
-//     self.current:update(dt)
-// end
-
-// function StateMachine:render()
-//     self.current:render()
-// end
 
 mod high_score_state;
 mod start_state;

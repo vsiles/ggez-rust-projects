@@ -3,12 +3,12 @@ use std::collections::HashSet;
 use std::path;
 
 use ggez::audio;
+use ggez::event::{KeyCode, KeyMods};
 use ggez::timer;
 use ggez::Context;
 use ggez::GameResult;
-use ggez::event::{KeyCode, KeyMods};
 
-use cgmath::Point2;
+use cgmath::{Point2, Vector2};
 
 mod state;
 
@@ -68,12 +68,21 @@ pub struct HighScore {
     score: u32,
 }
 
+pub struct Images {
+    background: ggez::graphics::Image,
+    // ['main'] = love.graphics.newImage('graphics/breakout.png'),
+    // ['arrows'] = love.graphics.newImage('graphics/arrows.png'),
+    // ['hearts'] = love.graphics.newImage('graphics/hearts.png'),
+    // ['particle'] = love.graphics.newImage('graphics/particle.png')
+}
+
 pub struct GlobalState {
     sounds: Sounds,
     fonts: Fonts,
     state_machine: state::StateMachine,
     high_scores: Vec<HighScore>,
     keys_pressed: Keys,
+    images: Images,
 }
 
 impl GlobalState {
@@ -144,6 +153,10 @@ impl GlobalState {
             large: 48.0,
         };
 
+        let mut background = ggez::graphics::Image::new(ctx, "/graphics/background.png")?;
+        background.set_filter(ggez::graphics::FilterMode::Nearest);
+        let images = Images { background };
+
         let mut states = state::StateMachine::new();
         let start_state = state::StartState::new(&fonts);
         let high_score_state = state::HighScoreState::new(&fonts);
@@ -159,10 +172,11 @@ impl GlobalState {
 
         let state = GlobalState {
             fonts,
+            images,
             sounds,
             state_machine: states,
             high_scores: vec![],
-            keys_pressed : HashSet::new()
+            keys_pressed: HashSet::new(),
         };
         Ok(state)
     }
@@ -178,14 +192,20 @@ impl GlobalState {
 
 impl ggez::event::EventHandler for GlobalState {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
-        self.state_machine.update(&mut self.sounds, &self.keys_pressed, ctx)?;
+        self.state_machine
+            .update(&mut self.sounds, &self.keys_pressed, ctx)?;
         self.keys_pressed = HashSet::new();
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult<()> {
-        // TODO: draw backgroundd
-        ggez::graphics::clear(ctx, [40.0 / 255.0, 45.0 / 255.0, 52.0 / 255.0, 1.0].into());
+        ggez::graphics::clear(ctx, [0.0, 0.0, 0.0, 1.0].into());
+        // ggez::graphics::clear(ctx, [40.0 / 255.0, 45.0 / 255.0, 52.0 / 255.0, 1.0].into());
+        let dest = Point2::new(0.0, 0.0);
+        let size = self.images.background.dimensions();
+        let scale = Vector2::new(WIDTH / (size.w - 1.0), HEIGHT / (size.h - 1.0));
+        let param = ggez::graphics::DrawParam::new().dest(dest).scale(scale);
+        ggez::graphics::draw(ctx, &self.images.background, param)?;
 
         self.state_machine.render(self, ctx)?;
         self.display_fps(ctx)?;
@@ -195,7 +215,6 @@ impl ggez::event::EventHandler for GlobalState {
     fn key_down_event(&mut self, _ctx: &mut Context, key: KeyCode, _mods: KeyMods, _repeat: bool) {
         let _ = self.keys_pressed.insert(key);
     }
-
 }
 
 fn main() {
