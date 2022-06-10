@@ -50,7 +50,7 @@ impl Ball {
     pub fn render(&self, ctx: &mut Context) -> GameResult<()> {
         let rect = graphics::Rect::new(self.xy.x, self.xy.y, self.size.x, self.size.y);
         let mesh =
-            graphics::Mesh::new_rectangle(ctx, graphics::DrawMode::fill(), rect, graphics::WHITE)?;
+            graphics::Mesh::new_rectangle(ctx, graphics::DrawMode::fill(), rect, graphics::Color::WHITE)?;
         graphics::draw(ctx, &mesh, DrawParam::default())
     }
 }

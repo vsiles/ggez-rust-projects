@@ -190,7 +190,7 @@ impl GlobalState {
     }
 }
 
-impl ggez::event::EventHandler for GlobalState {
+impl ggez::event::EventHandler<ggez::GameError> for GlobalState {
     fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
         self.state_machine
             .update(&mut self.sounds, &self.keys_pressed, ctx)?;
@@ -223,8 +223,8 @@ fn main() {
     c.window_mode.width = WIDTH;
     c.window_mode.height = HEIGHT;
 
-    let (ref mut ctx, ref mut event_loop) = ggez::ContextBuilder::new("breakout", "vinz")
-        .conf(c)
+    let (mut ctx, event_loop) = ggez::ContextBuilder::new("breakout", "vinz")
+        .default_conf(c)
         .window_setup(
             ggez::conf::WindowSetup::default()
                 .title("BreakOut")
@@ -235,7 +235,7 @@ fn main() {
         .unwrap();
     // let rng = rand::thread_rng();
 
-    let global_state = &mut GlobalState::new(ctx).unwrap();
+    let global_state = GlobalState::new(&mut ctx).unwrap();
 
-    ggez::event::run(ctx, event_loop, global_state).unwrap();
+    ggez::event::run(ctx, event_loop, global_state)
 }

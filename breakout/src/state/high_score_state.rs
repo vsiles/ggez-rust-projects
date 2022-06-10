@@ -42,11 +42,11 @@ impl State for HighScoreState {
         &mut self,
         sounds: &mut Sounds,
         keys: &Keys,
-        _ctx: &mut Context,
+        ctx: &mut Context,
     ) -> GameResult<Option<StateKind>> {
         if keys.contains(&KeyCode::Escape) {
             let key = &SoundKind::WallHit.to_string();
-            sounds.get_mut(key).unwrap().play()?;
+            sounds.get_mut(key).unwrap().play(ctx)?;
             Ok(Some(StateKind::Start))
         } else {
             Ok(None)
