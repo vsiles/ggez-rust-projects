@@ -123,11 +123,11 @@ impl ggez::event::EventHandler for State {
 
         match self.state {
             GameState::Serve => {
-                self.ball.delta.y = self.rng.gen_range(-50.0, 50.0);
+                self.ball.delta.y = self.rng.gen_range(-50.0..50.0);
                 if self.serving_player == 1 {
-                    self.ball.delta.x = self.rng.gen_range(140.0, 200.0);
+                    self.ball.delta.x = self.rng.gen_range(140.0..200.0);
                 } else {
-                    self.ball.delta.x = -self.rng.gen_range(140.0, 200.0);
+                    self.ball.delta.x = -self.rng.gen_range(140.0..200.0);
                 }
             }
             GameState::Play => {
@@ -136,11 +136,11 @@ impl ggez::event::EventHandler for State {
                     self.ball.xy.x = self.player1.xy.x + 15.0;
 
                     if self.ball.delta.y < 0.0 {
-                        self.ball.delta.y = -self.rng.gen_range(10.0, 150.0)
+                        self.ball.delta.y = -self.rng.gen_range(10.0..150.0)
                     } else {
-                        self.ball.delta.y = self.rng.gen_range(10.0, 150.0)
+                        self.ball.delta.y = self.rng.gen_range(10.0..150.0)
                     }
-                    self.sounds.paddle_hit.play()?
+                    self.sounds.paddle_hit.play(ctx)?
                 }
 
                 if self.ball.collides(&self.player2) {
@@ -148,30 +148,30 @@ impl ggez::event::EventHandler for State {
                     self.ball.xy.x = self.player2.xy.x - 12.0;
 
                     if self.ball.delta.y < 0.0 {
-                        self.ball.delta.y = -self.rng.gen_range(10.0, 150.0)
+                        self.ball.delta.y = -self.rng.gen_range(10.0..150.0)
                     } else {
-                        self.ball.delta.y = self.rng.gen_range(10.0, 150.0)
+                        self.ball.delta.y = self.rng.gen_range(10.0..150.0)
                     }
-                    self.sounds.paddle_hit.play()?
+                    self.sounds.paddle_hit.play(ctx)?
                 }
 
                 if self.ball.xy.y <= 0.0 {
                     self.ball.xy.y = 0.0;
                     self.ball.delta.y = -self.ball.delta.y;
-                    self.sounds.wall_hit.play()?
+                    self.sounds.wall_hit.play(ctx)?
                 }
 
                 if self.ball.xy.y >= HEIGHT - 12.0 {
                     // BALL SIZE
                     self.ball.xy.y = HEIGHT - 12.0;
                     self.ball.delta.y = -self.ball.delta.y;
-                    self.sounds.wall_hit.play()?
+                    self.sounds.wall_hit.play(ctx)?
                 }
 
                 if self.ball.xy.x < 0.0 {
                     self.serving_player = 1;
                     self.player2_score = self.player2_score + 1;
-                    self.sounds.score.play()?;
+                    self.sounds.score.play(ctx)?;
 
                     if self.player2_score == 10 {
                         self.winning_player = 2;
@@ -185,7 +185,7 @@ impl ggez::event::EventHandler for State {
                 if self.ball.xy.x > WIDTH {
                     self.serving_player = 2;
                     self.player1_score = self.player1_score + 1;
-                    self.sounds.score.play()?;
+                    self.sounds.score.play(ctx)?;
 
                     if self.player1_score == 10 {
                         self.winning_player = 1;
@@ -323,8 +323,8 @@ fn main() {
     c.window_mode.width = WIDTH;
     c.window_mode.height = HEIGHT;
 
-    let (ref mut ctx, ref mut event_loop) = ContextBuilder::new("hello_ggez", "vinz")
-        .conf(c)
+    let (mut ctx, event_loop) = ContextBuilder::new("hello_ggez", "vinz")
+        .default_conf(c)
         .window_setup(
             ggez::conf::WindowSetup::default()
                 .title("Pong Test")
@@ -335,8 +335,7 @@ fn main() {
         .unwrap();
     let rng = rand::thread_rng();
 
-    let state = &mut State::new(ctx, rng).unwrap();
+    let state = State::new(&mut ctx, rng).unwrap();
 
-    event::run(ctx, event_loop, state).unwrap();
-    println!("Ggez exited")
+    event::run(ctx, event_loop, state)
 }

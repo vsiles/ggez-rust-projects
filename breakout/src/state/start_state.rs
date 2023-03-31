@@ -52,12 +52,12 @@ impl State for StartState {
         if keys.contains(&KeyCode::Up) || keys.contains(&KeyCode::Down) {
             self.highlighted = if self.highlighted == 1 { 2 } else { 1 };
             let key = &SoundKind::PaddleHit.to_string();
-            sounds.get_mut(key).unwrap().play()?
+            sounds.get_mut(key).unwrap().play(ctx)?
         }
 
         let next = if keys.contains(&KeyCode::Return) {
             let key = &SoundKind::Confirm.to_string();
-            sounds.get_mut(key).unwrap().play()?;
+            sounds.get_mut(key).unwrap().play(ctx)?;
             if self.highlighted == 1 {
                 Some(StateKind::PaddleSelect)
             } else {
