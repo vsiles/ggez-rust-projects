@@ -795,9 +795,9 @@ dependencies = [
 
 [[package]]
 name = "ggez"
-version = "0.9.2"
+version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee8b78809a0c28cdb28dea3d1d02e30537ebf43f3bdcca338fbbf4a31ca33a15"
+checksum = "faa9c608ac25c61dd7dc4b04201179373e8fe0cfa0a3801690d1341e2149c871"
 dependencies = [
  "approx 0.5.1",
  "bitflags 2.3.2",
@@ -1052,6 +1052,7 @@ dependencies = [
  "byteorder",
  "color_quant",
  "gif",
+ "jpeg-decoder",
  "num-rational",
  "num-traits",
  "png",
